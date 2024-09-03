@@ -1,0 +1,107 @@
+﻿
+@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+<h1>TicTacToe</h1>
+<div class="column">
+    @for (int i = 0; i < 3; i++)
+    {
+        <div class="row">
+            @for (int j = 0; j < 3; j++)
+            {
+                int ind = i * 3 + j;
+                <button class="cell" @onclick="() => onChange(ind)">@grid[ind]</button>
+            }
+        </div>
+    }
+
+</div>
+<p class="status">  @status</p>
+<div class="reset">
+<button class="btn btn-primary" @onclick="ResetGame">Reset</button>
+</div>
+@code {
+    private string[] grid = new string[9] { "", "", "", "", "", "", "", "", "" };
+    private bool Xturn = true;
+    private bool game = false;
+    private string status = "Next Player : X";
+    private void onChange(int index)
+    {
+        if (game)
+        {
+            return;
+        }
+        if (grid[index] != "")
+        {
+            return;
+        }
+        grid[index] = Xturn ? "X" : "O";
+        Xturn = !Xturn;
+        if(CalculateWinner()){
+            status=$"Winner : {grid[index]}";
+            game=true;
+        }
+        else if(!grid.Contains("")){
+            status="Game is Draw";
+            game=true;
+        }
+        else{
+            status=$"Next Player : {(Xturn ? "X" : "O")} ";
+        }
+
+    }
+    private void ResetGame(){
+        grid = new string[9] { "", "", "", "", "", "", "", "", "" };
+        Xturn = true;
+        game = false;
+        status = "Next Player : X";
+    }
+     private bool CalculateWinner()
+    {
+        int[][] lines = new int[][]
+        {
+            new int[] { 0, 1, 2 },
+            new int[] { 3, 4, 5 },
+            new int[] { 6, 7, 8 },
+            new int[] { 0, 3, 6 },
+            new int[] { 1, 4, 7 },
+            new int[] { 2, 5, 8 },
+            new int[] { 0, 4, 8 },
+            new int[] { 2, 4, 6 }
+        };
+
+        foreach (var line in lines)
+        {
+            if (grid[line[0]] != "" &&
+                grid[line[0]] == grid[line[1]] &&
+                grid[line[0]] == grid[line[2]])
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+<style>
+    .cell {
+        width: 60px;
+        height: 60px;
+        font-size: 25px;
+        font-weight: bold;
+        margin: 2px;
+        cursor: pointer;
+        border-radius : 5px
+    }
+    .status{
+        margin-top: 10px;
+        font-size: 25px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .reset{
+        margin-left:50px;
+    }
+
+</style>
